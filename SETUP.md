@@ -1,59 +1,58 @@
-# Whoop MCP Server — Railway Deployment
+# Whoop MCP Server — Render Deployment
 
 ## 1. Create Whoop Developer App
 
 1. Go to https://developer.whoop.com/
 2. Sign in with your Whoop account
 3. Create a new application
-4. Set the **Redirect URI** to: `https://YOUR_RAILWAY_URL/callback`
-   (You'll update this after the first deploy gives you the Railway URL)
+4. Set the **Redirect URI** to: `https://whoop-mcp.onrender.com/callback`
+   (You'll update this after the first deploy gives you the actual Render URL)
 5. Copy the **Client ID** and **Client Secret**
 
-## 2. Deploy to Railway
+## 2. Deploy to Render
 
-```bash
-# From this directory:
-railway login
-railway init          # Create new project, name it "whoop-mcp"
-railway up            # Deploy
-```
+### Option A: Blueprint (one-click)
+1. Push this repo to GitHub
+2. Go to https://dashboard.render.com/blueprints
+3. Click "New Blueprint Instance" → connect your GitHub repo
+4. Render reads `render.yaml` and creates the service
+5. Fill in the env vars when prompted
 
-After first deploy, grab your Railway URL from the dashboard (e.g. `https://whoop-mcp-production.up.railway.app`).
+### Option B: Manual
+1. Go to https://dashboard.render.com/
+2. New → Web Service → Connect your GitHub repo
+3. Set:
+   - **Name**: `whoop-mcp`
+   - **Runtime**: Docker
+   - **Plan**: Free
+4. Add environment variables (see below)
 
-## 3. Set Environment Variables in Railway
-
-In Railway dashboard → your service → Variables:
+## 3. Set Environment Variables
 
 ```
 WHOOP_CLIENT_ID=<from step 1>
 WHOOP_CLIENT_SECRET=<from step 1>
-WHOOP_REDIRECT_URI=https://YOUR_RAILWAY_URL/callback
+WHOOP_REDIRECT_URI=https://whoop-mcp.onrender.com/callback
 MCP_MODE=http
 PORT=3000
 ```
 
-Railway auto-assigns PORT via `${{PORT}}` — you can use Railway's port variable or hardcode 3000.
-
 ## 4. Update Whoop Developer App
 
-Go back to https://developer.whoop.com/ and update the Redirect URI to match your actual Railway URL:
+Go back to https://developer.whoop.com/ and update the Redirect URI to match your actual Render URL:
 ```
-https://whoop-mcp-production.up.railway.app/callback
+https://whoop-mcp.onrender.com/callback
 ```
 
 ## 5. Authorize Your Whoop Account
 
-Call the `get_auth_url` tool via MCP, or visit:
-```
-https://YOUR_RAILWAY_URL/health
-```
-to confirm the server is running, then trigger OAuth via the MCP client.
+Visit `https://whoop-mcp.onrender.com/health` to confirm the server is running, then use the `get_auth_url` tool via MCP to start the OAuth flow.
 
 ## 6. Add to Claude.ai
 
 The MCP URL to paste into Claude.ai → Settings → Connectors → Add custom connector:
 ```
-https://YOUR_RAILWAY_URL/mcp
+https://whoop-mcp.onrender.com/mcp
 ```
 
 ## Available Tools
@@ -69,6 +68,7 @@ https://YOUR_RAILWAY_URL/mcp
 
 ## Notes
 
-- **SQLite storage**: The server uses SQLite for caching data. Railway's filesystem is ephemeral — data resets on redeploy. This means you'll need to re-authorize and re-sync after each deploy. For race week this is fine.
-- **Token refresh**: OAuth tokens are stored in SQLite and auto-refresh. If you redeploy, you'll need to re-authorize via `get_auth_url`.
-- **Data sync**: The server auto-syncs on each data request if data is >1 hour old. Use `sync_data` for manual sync.
+- **Free tier cold starts**: Render free services spin down after 15 min idle. First request after idle takes ~30-60 seconds. Subsequent requests are fast.
+- **SQLite storage**: Ephemeral on Render free tier — data resets on redeploy. Re-authorize via `get_auth_url` after each deploy.
+- **Token refresh**: OAuth tokens auto-refresh. If the service restarts, re-authorize.
+- **Data sync**: Auto-syncs on each data request if data is >1 hour old. Use `sync_data` for manual sync.
