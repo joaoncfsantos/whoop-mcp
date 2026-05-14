@@ -5,7 +5,7 @@
 1. Go to https://developer.whoop.com/
 2. Sign in with your Whoop account
 3. Create a new application
-4. Set the **Redirect URI** to: `https://whoop-mcp.onrender.com/callback`
+4. Set the **Redirect URI** to: `https://whoop-mcp-xjtc.onrender.com/callback`
    (You'll update this after the first deploy gives you the actual Render URL)
 5. Copy the **Client ID** and **Client Secret**
 
@@ -32,7 +32,7 @@
 ```
 WHOOP_CLIENT_ID=<from step 1>
 WHOOP_CLIENT_SECRET=<from step 1>
-WHOOP_REDIRECT_URI=https://whoop-mcp.onrender.com/callback
+WHOOP_REDIRECT_URI=https://whoop-mcp-xjtc.onrender.com/callback
 MCP_MODE=http
 PORT=3000
 ```
@@ -41,18 +41,18 @@ PORT=3000
 
 Go back to https://developer.whoop.com/ and update the Redirect URI to match your actual Render URL:
 ```
-https://whoop-mcp.onrender.com/callback
+https://whoop-mcp-xjtc.onrender.com/callback
 ```
 
 ## 5. Authorize Your Whoop Account
 
-Visit `https://whoop-mcp.onrender.com/health` to confirm the server is running, then use the `get_auth_url` tool via MCP to start the OAuth flow.
+Visit `https://whoop-mcp-xjtc.onrender.com/health` to confirm the server is running, then use the `get_auth_url` tool via MCP to start the OAuth flow.
 
 ## 6. Add to Claude.ai
 
 The MCP URL to paste into Claude.ai → Settings → Connectors → Add custom connector:
 ```
-https://whoop-mcp.onrender.com/mcp
+https://whoop-mcp-xjtc.onrender.com/mcp
 ```
 
 ## Available Tools
